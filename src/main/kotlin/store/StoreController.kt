@@ -14,9 +14,11 @@ class StoreController {
         outputView.printProducts(store.getProducts())
         val purchaseProducts = inputView.inputPurchaseProduct(store.getProducts())
         val purchaseResults = purchaseProducts.map { purchaseProduct ->
+            val processedPurchaseProduct = getPromotionPurchaseProduct(purchaseProduct, store)
             store.buyProducts(purchaseProduct)
         }
-        outputView.printReceipt(purchaseResults)
+        val isMemberShip = inputView.inputIsMemberShip()
+        outputView.printReceipt(purchaseResults, isMemberShip)
     }
 
     private fun getProducts(): List<Product> {
@@ -45,5 +47,31 @@ class StoreController {
         val buy = requireNotNull(buyInput.toIntOrNull()) { "[ERROR] 파일 형식이 잘못되었습니다." }
         val get = requireNotNull(getInput.toIntOrNull()) { "[ERROR] 파일 형식이 잘못되었습니다." }
         return Promotion(name, buy, get, startDate, endDate)
+    }
+
+    private fun getPromotionPurchaseProduct(purchaseProduct: RequestProduct, store: Store): RequestProduct {
+        if (store.isPromotion(purchaseProduct)) {
+            val addApplyProduct = store.getAddApplyProduct(purchaseProduct)
+            val excludeProduct = store.getExcludePromotionProduct(purchaseProduct)
+            if (addApplyProduct.count > 0) {
+                return getAddApplyProduct(purchaseProduct, addApplyProduct)
+            }
+            if (excludeProduct.count > 0) {
+                return getExcludeProduct(purchaseProduct, excludeProduct)
+            }
+        }
+        return purchaseProduct
+    }
+
+    private fun getAddApplyProduct(purchaseProduct: RequestProduct, addApplyProduct: RequestProduct): RequestProduct {
+        val isAddApplyProduct = inputView.inputIsAddApplyProduct(addApplyProduct)
+        if (isAddApplyProduct) return purchaseProduct.copy(count = purchaseProduct.count + addApplyProduct.count)
+        return purchaseProduct
+    }
+
+    private fun getExcludeProduct(purchaseProduct: RequestProduct, excludeProduct: RequestProduct): RequestProduct {
+        val isExcludeProduct = inputView.inputIsExcludeProduct(excludeProduct)
+        if (isExcludeProduct) return purchaseProduct.copy(count = purchaseProduct.count - excludeProduct.count)
+        return purchaseProduct
     }
 }

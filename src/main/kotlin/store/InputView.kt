@@ -22,10 +22,17 @@ class InputView {
     }
 
     fun inputIsAddApplyProduct(requestProduct: RequestProduct): Boolean {
-        println("현재 ${requestProduct.name}은(는) ${requestProduct.count}개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)\n")
+        println("현재 ${requestProduct.name}은(는) ${requestProduct.count}개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)")
         val isAddApplyProductInput = Console.readLine()
         require(isAddApplyProductInput == "Y" || isAddApplyProductInput == "N") { "[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요." }
         return isAddApplyProductInput == "Y"
+    }
+
+    fun inputIsExcludeProduct(requestProduct: RequestProduct): Boolean {
+        println("현재 콜라 4개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)")
+        val isIsExcludeProduct = Console.readLine()
+        require(isIsExcludeProduct == "Y" || isIsExcludeProduct == "N") { "[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요." }
+        return isIsExcludeProduct == "N"
     }
 
     fun inputIsMemberShip(): Boolean {

@@ -39,15 +39,42 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
         return currentDate in startDate..endDate
     }
 
+    fun getAddApplyProduct(purchaseProduct: RequestProduct): RequestProduct {
+        val product = findProduct(purchaseProduct.name) ?: throw IllegalArgumentException()
+        val promotion = findPromotion(product) ?: throw IllegalArgumentException()
+        if (product.getQuantity <= purchaseProduct.count) return purchaseProduct.copy(count = 0)
+        val totalEventCount = promotion.get + promotion.buy
+        val excludeCount = purchaseProduct.count % (totalEventCount)
+        val addApplyCount = if (excludeCount >= promotion.get) totalEventCount - excludeCount else 0
+        return RequestProduct(purchaseProduct.name, addApplyCount)
+    }
+
+    fun getExcludePromotionProduct(purchaseProduct: RequestProduct): RequestProduct {
+        val product = findProduct(purchaseProduct.name) ?: throw IllegalArgumentException()
+        val promotion = findPromotion(product) ?: throw IllegalArgumentException()
+        if (product.getQuantity >= purchaseProduct.count) return purchaseProduct.copy(count = 0)
+        val totalEventCount = promotion.get + promotion.buy
+        val promotionCount = product.getQuantity.div(totalEventCount) * totalEventCount
+        return purchaseProduct.copy(count = purchaseProduct.count - promotionCount)
+    }
+
+    fun getApplyCount(purchaseProduct: RequestProduct): Int {
+        if (isPromotion(purchaseProduct)) return 0
+        val product = findProduct(purchaseProduct.name) ?: throw IllegalArgumentException()
+        val promotion = findPromotion(product) ?: throw IllegalArgumentException()
+        return product.getQuantity.div(promotion.get + promotion.buy) * promotion.get
+    }
+
     fun buyProducts(requestProduct: RequestProduct): PurchaseResult {
         var currentPurchaseProduct = requestProduct.count
         products.filter { requestProduct.name == it.name }.forEach { product ->
             val buyCount = product.buyQuantity(currentPurchaseProduct)
             currentPurchaseProduct -= buyCount
         }
+        val applyCount = getApplyCount(requestProduct)
         val product = findProduct(requestProduct.name) ?: throw IllegalArgumentException()
         val totalPrice = requestProduct.count * product.price
-        return PurchaseResult(requestProduct, totalPrice)
+        return PurchaseResult(requestProduct, totalPrice, applyCount, applyCount * product.price,)
     }
 
     private fun findProduct(name: String) = products.find { name == it.name }

@@ -14,8 +14,10 @@ class OutputView {
         }
     }
 
-    fun printReceipt(results: List<PurchaseResult>) {
-        val membershipDiscount = 0
+    fun printReceipt(results: List<PurchaseResult>, isMembership: Boolean) {
+        val totalPrice = results.sumOf { it.totalPrice }
+        val applyDiscount = results.sumOf { it.applyPrice }
+        val membershipDiscount = getMembershipDiscount(totalPrice, applyDiscount, isMembership)
         val totalDiscount = results.sumOf { results.sumOf { it.applyCount } } - membershipDiscount
         println("===========W 편의점=============")
         println(" 상품명		수량	금액")
@@ -27,10 +29,19 @@ class OutputView {
             println("${result.requestProduct.name}        ${result.applyCount}")
         }
         println("====== === === === === === === === ===")
-        println("총구매액        ${results.sumOf { it.requestProduct.count }}    ${results.sumOf { it.totalPrice }.wonFormat()}")
-        println("행사할인        - ${results.sumOf { it.applyPrice }.wonFormat()}")
-        println("멤버십할인 - 3, 000")
-        println(" 내실돈             ${(results.sumOf { it.totalPrice } - totalDiscount).wonFormat()}")
+        println(
+            "총구매액        ${results.sumOf { it.requestProduct.count }}    ${
+                results.sumOf { it.totalPrice }.wonFormat()
+            }"
+        )
+        println("행사할인        -${results.sumOf { it.applyPrice }.wonFormat()}")
+        println("멤버십할인 -${membershipDiscount}")
+        println(" 내실돈             ${(results.sumOf { it.totalPrice } - totalDiscount - membershipDiscount).wonFormat()}")
+    }
+
+    private fun getMembershipDiscount(totalPrice: Int, applyDiscount: Int, isMembership: Boolean): Int {
+        if (isMembership) return (totalPrice - applyDiscount).times(0.3).toInt().coerceAtMost(8000)
+        return 0
     }
 
     private fun Int.wonFormat(): String {
