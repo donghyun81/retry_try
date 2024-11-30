@@ -8,6 +8,7 @@ class OutputView {
     }
 
     fun printProducts(products: List<Product>) {
+        println("현재 보유하고 있는 상품입니다.\n")
         products.forEach { product ->
             println("- ${product.name} ${product.price.wonFormat()}원 ${product.quantity.emptyQuantityMessage()} ${product.promotion ?: ""}")
         }
