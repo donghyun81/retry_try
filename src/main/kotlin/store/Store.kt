@@ -61,7 +61,9 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
     private fun getApplyCount(purchaseProduct: RequestProduct): Int {
         if (isPromotion(purchaseProduct).not()) return 0
         val product = findProduct(purchaseProduct.name) ?: throw IllegalArgumentException()
-        val promotion = findPromotion(product) ?: throw IllegalArgumentException()
+        val promotion = findPromotion(product) ?: return 0
+        if (purchaseProduct.count >= product.getQuantity()) return product.getQuantity()
+            .div(promotion.get + promotion.buy) * promotion.get
         return purchaseProduct.count.div(promotion.get + promotion.buy) * promotion.get
     }
 
@@ -73,11 +75,11 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
 
     fun buyProducts(requestProduct: RequestProduct): PurchaseResult {
         var currentPurchaseProduct = requestProduct.count
+        val applyCount = getApplyCount(requestProduct)
         products.filter { requestProduct.name == it.name }.forEach { product ->
             val buyCount = product.buyQuantity(currentPurchaseProduct)
             currentPurchaseProduct -= buyCount
         }
-        val applyCount = getApplyCount(requestProduct)
         val product = findProduct(requestProduct.name) ?: throw IllegalArgumentException()
         println(product)
         val totalPrice = requestProduct.count * product.price

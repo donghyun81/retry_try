@@ -21,7 +21,7 @@ class StoreController {
             }
             val isMemberShip = retryInput { inputView.inputIsMemberShip() }
             outputView.printReceipt(purchaseResults, isMemberShip)
-            inputView.inputIsRetry()
+            retryInput { inputView.inputIsRetry()}
         }
     }
 
