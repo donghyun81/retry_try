@@ -13,12 +13,19 @@ class InputView {
             val count = requireNotNull(countInput.toIntOrNull()) { "[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요." }
             require(products.count { it.name == name } != 0) { "[ERROR] 존재하지 않는 상품입니다. 다시 입력해 주세요." }
             require(products.filter { it.name == name }
-                .sumOf { it.quantity } >= count) { "[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요." }
+                .sumOf { it.getQuantity } >= count) { "[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요." }
             RequestProduct(name, count)
         }
         return requestProducts.groupBy { it.name }.map { (name, purchaseProducts) ->
             RequestProduct(name, purchaseProducts.sumOf { it.count })
         }
+    }
+
+    fun inputIsAddApplyProduct(requestProduct: RequestProduct): Boolean {
+        println("현재 ${requestProduct.name}은(는) ${requestProduct.count}개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)\n")
+        val isAddApplyProductInput = Console.readLine()
+        require(isAddApplyProductInput == "Y" || isAddApplyProductInput == "N") { "[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요." }
+        return isAddApplyProductInput == "Y"
     }
 
     fun inputIsMemberShip(): Boolean {
