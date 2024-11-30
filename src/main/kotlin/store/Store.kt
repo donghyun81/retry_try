@@ -2,7 +2,6 @@ package store
 
 import camp.nextstep.edu.missionutils.DateTimes
 import java.time.LocalDate
-import javax.swing.text.DateFormatter
 
 class Store(initProducts: List<Product>, private val promotions: List<Promotion>) {
 
@@ -31,8 +30,8 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
 
     fun getProducts() = products.toList()
 
-    fun isPromotion(purchaseProduct: PurchaseProduct): Boolean {
-        val product = findProduct(purchaseProduct.name) ?: return false
+    fun isPromotion(requestProduct: RequestProduct): Boolean {
+        val product = findProduct(requestProduct.name) ?: return false
         val promotion = findPromotion(product) ?: return false
         val currentDate = DateTimes.now().toLocalDate()
         val startDate = LocalDate.parse(promotion.startDate)
@@ -40,28 +39,29 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
         return currentDate in startDate..endDate
     }
 
-    fun getPurchaseResult(purchaseProduct: PurchaseProduct): PurchaseResult {
-        val product = findProduct(purchaseProduct.name) ?: throw IllegalArgumentException()
+
+    fun getPurchaseResult(requestProduct: RequestProduct): PurchaseResult {
+        val product = findProduct(requestProduct.name) ?: throw IllegalArgumentException()
         val promotion = findPromotion(product) ?: throw IllegalArgumentException()
-        val applyCount = purchaseProduct.count / promotion.buy
-        val buyCount = purchaseProduct.count - applyCount
-        buyPromotionProducts(purchaseProduct)
+        val applyCount = requestProduct.count / promotion.buy
+        val buyCount = requestProduct.count - applyCount
+        buyPromotionProducts(requestProduct)
         return PurchaseResult(
-            purchaseProduct,
+            requestProduct,
             applyCount,
-            purchaseProduct.count * product.price,
+            requestProduct.count * product.price,
             applyCount * product.price
         )
     }
 
-    fun isOutOfStock(purchaseProduct: PurchaseProduct): Boolean {
-        val product = findProduct(purchaseProduct.name) ?: return false
-        return product.getQuantity < purchaseProduct.count
+    fun isOutOfStock(requestProduct: RequestProduct): Boolean {
+        val product = findProduct(requestProduct.name) ?: return false
+        return product.getQuantity < requestProduct.count
     }
 
-    private fun buyPromotionProducts(purchaseProduct: PurchaseProduct) {
-        var currentPurchaseProduct = purchaseProduct.count
-        products.filter { purchaseProduct.name == it.name }.forEach { product ->
+    private fun buyPromotionProducts(requestProduct: RequestProduct) {
+        var currentPurchaseProduct = requestProduct.count
+        products.filter { requestProduct.name == it.name }.forEach { product ->
             product.buyQuantity(currentPurchaseProduct)
             currentPurchaseProduct -= product.getQuantity
             if (currentPurchaseProduct < 0) return

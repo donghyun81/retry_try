@@ -1,7 +1,7 @@
 package store
 
 data class PurchaseResult(
-    val purchaseProduct: PurchaseProduct,
+    val requestProduct: RequestProduct,
     val applyCount: Int,
     val totalPrice: Int,
     val discountPrice: Int = 0
