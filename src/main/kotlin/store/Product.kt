@@ -5,5 +5,8 @@ data class Product(
 ) {
     val getQuantity = quantity
 
-    fun buyQuantity(count: Int) = quantity - count
+    fun buyQuantity(count: Int): Int {
+        quantity -= count.coerceAtLeast(0)
+        return count.coerceAtMost(quantity)
+    }
 }
