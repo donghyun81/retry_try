@@ -13,7 +13,6 @@ class StoreController {
         val store = Store(products, promotion)
         retryPurchase {
             outputView.printProducts(store.getProducts())
-            println(store.getProducts())
             val purchaseProducts = retryInput { inputView.inputPurchaseProduct(store.getProducts()) }
             val purchaseResults = purchaseProducts.map { purchaseProduct ->
                 val processedPurchaseProduct = getPromotionPurchaseProduct(purchaseProduct, store)

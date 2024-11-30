@@ -81,7 +81,6 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
             currentPurchaseProduct -= buyCount
         }
         val product = findProduct(requestProduct.name) ?: throw IllegalArgumentException()
-        println(product)
         val totalPrice = requestProduct.count * product.price
         val promotionPrice = getPromotionPrice(applyCount, product)
         return PurchaseResult(requestProduct, totalPrice, applyCount, promotionPrice, applyCount * product.price)
