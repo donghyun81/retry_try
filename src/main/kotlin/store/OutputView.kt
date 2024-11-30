@@ -10,15 +10,15 @@ class OutputView {
     fun printProducts(products: List<Product>) {
         println("현재 보유하고 있는 상품입니다.\n")
         products.forEach { product ->
-            println("- ${product.name} ${product.price.wonFormat()}원 ${product.getQuantity.emptyQuantityMessage()} ${product.promotion ?: ""}")
+            println("- ${product.name} ${product.price.wonFormat()}원 ${product.getQuantity().emptyQuantityMessage()} ${product.promotion ?: ""}")
         }
     }
 
     fun printReceipt(results: List<PurchaseResult>, isMembership: Boolean) {
         val totalPrice = results.sumOf { it.totalPrice }
-        val applyDiscount = results.sumOf { it.applyPrice }
-        val membershipDiscount = getMembershipDiscount(totalPrice, applyDiscount, isMembership)
-        val totalDiscount = results.sumOf { results.sumOf { it.applyCount } } - membershipDiscount
+        val promotionDiscount = results.sumOf { it.promotionPrice }
+        val membershipDiscount = getMembershipDiscount(totalPrice, promotionDiscount, isMembership)
+        val totalDiscount = results.sumOf { it.applyPrice } + membershipDiscount
         println("===========W 편의점=============")
         println(" 상품명		수량	금액")
         results.forEach { result ->
@@ -36,11 +36,11 @@ class OutputView {
         )
         println("행사할인        -${results.sumOf { it.applyPrice }.wonFormat()}")
         println("멤버십할인 -${membershipDiscount}")
-        println(" 내실돈             ${(results.sumOf { it.totalPrice } - totalDiscount - membershipDiscount).wonFormat()}")
+        println(" 내실돈             ${(results.sumOf { it.totalPrice } - totalDiscount).wonFormat()}")
     }
 
-    private fun getMembershipDiscount(totalPrice: Int, applyDiscount: Int, isMembership: Boolean): Int {
-        if (isMembership) return (totalPrice - applyDiscount).times(0.3).toInt().coerceAtMost(8000)
+    private fun getMembershipDiscount(totalPrice: Int, promotionDiscount: Int, isMembership: Boolean): Int {
+        if (isMembership) return (totalPrice - promotionDiscount).times(0.3).toInt().coerceAtMost(8000)
         return 0
     }
 

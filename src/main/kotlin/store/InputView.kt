@@ -13,7 +13,7 @@ class InputView {
             val count = requireNotNull(countInput.toIntOrNull()) { "[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요." }
             require(products.count { it.name == name } != 0) { "[ERROR] 존재하지 않는 상품입니다. 다시 입력해 주세요." }
             require(products.filter { it.name == name }
-                .sumOf { it.getQuantity } >= count) { "[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요." }
+                .sumOf { it.getQuantity() } >= count) { "[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요." }
             RequestProduct(name, count)
         }
         return requestProducts.groupBy { it.name }.map { (name, purchaseProducts) ->
@@ -40,5 +40,12 @@ class InputView {
         val isMembershipInput = Console.readLine()
         require(isMembershipInput == "Y" || isMembershipInput == "N") { "[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요." }
         return isMembershipInput == "Y"
+    }
+
+    fun inputIsRetry(): Boolean {
+        println("감사합니다. 구매하고 싶은 다른 상품이 있나요? (Y/N)")
+        val isRetry = Console.readLine()
+        require(isRetry == "Y" || isRetry == "N") { "[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요." }
+        return isRetry == "Y"
     }
 }

@@ -42,7 +42,7 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
     fun getAddApplyProduct(purchaseProduct: RequestProduct): RequestProduct {
         val product = findProduct(purchaseProduct.name) ?: throw IllegalArgumentException()
         val promotion = findPromotion(product) ?: throw IllegalArgumentException()
-        if (product.getQuantity <= purchaseProduct.count) return purchaseProduct.copy(count = 0)
+        if (product.getQuantity() <= purchaseProduct.count) return purchaseProduct.copy(count = 0)
         val totalEventCount = promotion.get + promotion.buy
         val excludeCount = purchaseProduct.count % (totalEventCount)
         val addApplyCount = if (excludeCount >= promotion.get) totalEventCount - excludeCount else 0
@@ -52,17 +52,23 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
     fun getExcludePromotionProduct(purchaseProduct: RequestProduct): RequestProduct {
         val product = findProduct(purchaseProduct.name) ?: throw IllegalArgumentException()
         val promotion = findPromotion(product) ?: throw IllegalArgumentException()
-        if (product.getQuantity >= purchaseProduct.count) return purchaseProduct.copy(count = 0)
+        if (product.getQuantity() >= purchaseProduct.count) return purchaseProduct.copy(count = 0)
         val totalEventCount = promotion.get + promotion.buy
-        val promotionCount = product.getQuantity.div(totalEventCount) * totalEventCount
+        val promotionCount = product.getQuantity().div(totalEventCount) * totalEventCount
         return purchaseProduct.copy(count = purchaseProduct.count - promotionCount)
     }
 
-    fun getApplyCount(purchaseProduct: RequestProduct): Int {
-        if (isPromotion(purchaseProduct)) return 0
+    private fun getApplyCount(purchaseProduct: RequestProduct): Int {
+        if (isPromotion(purchaseProduct).not()) return 0
         val product = findProduct(purchaseProduct.name) ?: throw IllegalArgumentException()
         val promotion = findPromotion(product) ?: throw IllegalArgumentException()
-        return product.getQuantity.div(promotion.get + promotion.buy) * promotion.get
+        return purchaseProduct.count.div(promotion.get + promotion.buy) * promotion.get
+    }
+
+    private fun getPromotionPrice(applyCount: Int, product: Product): Int {
+        val promotion = findPromotion(product) ?: return 0
+        val totalEventCount = promotion.get + promotion.buy
+        return (applyCount * totalEventCount) * product.price
     }
 
     fun buyProducts(requestProduct: RequestProduct): PurchaseResult {
@@ -73,8 +79,10 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
         }
         val applyCount = getApplyCount(requestProduct)
         val product = findProduct(requestProduct.name) ?: throw IllegalArgumentException()
+        println(product)
         val totalPrice = requestProduct.count * product.price
-        return PurchaseResult(requestProduct, totalPrice, applyCount, applyCount * product.price,)
+        val promotionPrice = getPromotionPrice(applyCount, product)
+        return PurchaseResult(requestProduct, totalPrice, applyCount, promotionPrice, applyCount * product.price)
     }
 
     private fun findProduct(name: String) = products.find { name == it.name }

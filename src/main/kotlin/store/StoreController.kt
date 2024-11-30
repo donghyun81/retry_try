@@ -11,14 +11,18 @@ class StoreController {
         val products = getProducts()
         val promotion = getPromotions()
         val store = Store(products, promotion)
-        outputView.printProducts(store.getProducts())
-        val purchaseProducts = inputView.inputPurchaseProduct(store.getProducts())
-        val purchaseResults = purchaseProducts.map { purchaseProduct ->
-            val processedPurchaseProduct = getPromotionPurchaseProduct(purchaseProduct, store)
-            store.buyProducts(purchaseProduct)
+        retryPurchase {
+            outputView.printProducts(store.getProducts())
+            println(store.getProducts())
+            val purchaseProducts = retryInput { inputView.inputPurchaseProduct(store.getProducts()) }
+            val purchaseResults = purchaseProducts.map { purchaseProduct ->
+                val processedPurchaseProduct = getPromotionPurchaseProduct(purchaseProduct, store)
+                store.buyProducts(processedPurchaseProduct)
+            }
+            val isMemberShip = retryInput { inputView.inputIsMemberShip() }
+            outputView.printReceipt(purchaseResults, isMemberShip)
+            inputView.inputIsRetry()
         }
-        val isMemberShip = inputView.inputIsMemberShip()
-        outputView.printReceipt(purchaseResults, isMemberShip)
     }
 
     private fun getProducts(): List<Product> {
@@ -64,13 +68,13 @@ class StoreController {
     }
 
     private fun getAddApplyProduct(purchaseProduct: RequestProduct, addApplyProduct: RequestProduct): RequestProduct {
-        val isAddApplyProduct = inputView.inputIsAddApplyProduct(addApplyProduct)
+        val isAddApplyProduct = retryInput { inputView.inputIsAddApplyProduct(addApplyProduct) }
         if (isAddApplyProduct) return purchaseProduct.copy(count = purchaseProduct.count + addApplyProduct.count)
         return purchaseProduct
     }
 
     private fun getExcludeProduct(purchaseProduct: RequestProduct, excludeProduct: RequestProduct): RequestProduct {
-        val isExcludeProduct = inputView.inputIsExcludeProduct(excludeProduct)
+        val isExcludeProduct = retryInput { inputView.inputIsExcludeProduct(excludeProduct) }
         if (isExcludeProduct) return purchaseProduct.copy(count = purchaseProduct.count - excludeProduct.count)
         return purchaseProduct
     }
