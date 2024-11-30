@@ -8,13 +8,14 @@ class StoreController {
     fun run() {
         outputView.printStart()
         val products = getProducts()
+        val promotion = getPromotions()
     }
 
     private fun getProducts(): List<Product> {
-        val file = FileReader("src/main/resources/products.md").readLines().drop(1).map { productsInput ->
+        val products = FileReader("src/main/resources/products.md").readLines().drop(1).map { productsInput ->
             createProduct(productsInput)
         }
-        return file
+        return products
     }
 
     private fun createProduct(productsInput: String): Product {
@@ -22,5 +23,19 @@ class StoreController {
         val price = requireNotNull(priceInput.toIntOrNull()) { "[ERROR] 파일 형식이 잘못되었습니다." }
         val quantity = requireNotNull(quantityInput.toIntOrNull()) { "[ERROR] 파일 형식이 잘못되었습니다." }
         return Product(name, price, quantity, promotion)
+    }
+
+    private fun getPromotions(): List<Promotion> {
+        val promotions = FileReader("src/main/resources/promotion.md").readLines().drop(1).map { productsInput ->
+            createPromotion(productsInput)
+        }
+        return promotions
+    }
+
+    private fun createPromotion(productsInput: String): Promotion {
+        val (name, buyInput, getInput, startDate, endDate) = productsInput.split(",")
+        val buy = requireNotNull(buyInput.toIntOrNull()) { "[ERROR] 파일 형식이 잘못되었습니다." }
+        val get = requireNotNull(getInput.toIntOrNull()) { "[ERROR] 파일 형식이 잘못되었습니다." }
+        return Promotion(name, buy, get, startDate, endDate)
     }
 }
