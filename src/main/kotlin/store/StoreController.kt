@@ -10,6 +10,7 @@ class StoreController {
         val products = getProducts()
         val promotion = getPromotions()
         val store = Store(products, promotion)
+        outputView.printProducts(store.getProducts())
     }
 
     private fun getProducts(): List<Product> {
@@ -27,7 +28,7 @@ class StoreController {
     }
 
     private fun getPromotions(): List<Promotion> {
-        val promotions = FileReader("src/main/resources/promotion.md").readLines().drop(1).map { productsInput ->
+        val promotions = FileReader("src/main/resources/promotions.md").readLines().drop(1).map { productsInput ->
             createPromotion(productsInput)
         }
         return promotions

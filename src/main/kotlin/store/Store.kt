@@ -23,6 +23,7 @@ class Store(initProducts: List<Product>, private val promotion: List<Promotion>)
                 .toMutableList()
     }
 
-    private fun containsSameName(name: String) = products.count { it.name == name } == 0
+    private fun containsSameName(name: String) = products.count { it.name == name } == 1
 
+    fun getProducts() = products.toList()
 }

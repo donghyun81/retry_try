@@ -9,7 +9,7 @@ class OutputView {
 
     fun printProducts(products: List<Product>) {
         products.forEach { product ->
-            println("- ${product.name} ${product.price.wonFormat()}원 ${product.quantity.emptyQuantityMessage()}개 ${product.promotion ?: ""}")
+            println("- ${product.name} ${product.price.wonFormat()}원 ${product.quantity.emptyQuantityMessage()} ${product.promotion ?: ""}")
         }
     }
 
@@ -20,6 +20,6 @@ class OutputView {
 
     private fun Int.emptyQuantityMessage(): String {
         if (this == 0) return "재고 없음"
-        return this.toString()
+        return this.toString() + "개"
     }
 }
