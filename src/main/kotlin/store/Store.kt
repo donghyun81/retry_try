@@ -48,18 +48,10 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
     }
 
 
-    fun getPurchaseResult(requestProduct: RequestProduct): PurchaseResult {
+    fun getApplyCount(requestProduct: RequestProduct): Int {
         val product = findProduct(requestProduct.name) ?: throw IllegalArgumentException()
         val promotion = findPromotion(product) ?: throw IllegalArgumentException()
-        val applyCount = requestProduct.count / promotion.buy
-        val buyCount = requestProduct.count - applyCount
-        buyPromotionProducts(requestProduct)
-        return PurchaseResult(
-            requestProduct,
-            applyCount,
-            requestProduct.count * product.price,
-            applyCount * product.price
-        )
+        return requestProduct.count / promotion.buy
     }
 
     fun isOutOfStock(requestProduct: RequestProduct): Boolean {
@@ -67,13 +59,20 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
         return product.getQuantity < requestProduct.count
     }
 
-    private fun buyPromotionProducts(requestProduct: RequestProduct) {
+    private fun buyPromotionProducts(requestProduct: RequestProduct): PurchaseResult {
         var currentPurchaseProduct = requestProduct.count
-        products.filter { requestProduct.name == it.name }.forEach { product ->
-            product.buyQuantity(currentPurchaseProduct)
-            currentPurchaseProduct -= product.getQuantity
-            if (currentPurchaseProduct < 0) return
+        val product = findProduct(requestProduct.name) ?: throw IllegalArgumentException()
+        val purchaseProductInventory = products.filter { requestProduct.name == it.name }
+        for (purchaseProduct in purchaseProductInventory) {
+            val quantity = purchaseProduct.getQuantity
+            purchaseProduct.buyQuantity(currentPurchaseProduct)
+            currentPurchaseProduct -= quantity
+            if (currentPurchaseProduct < 0) break
         }
+        val applyCount = getApplyCount(requestProduct)
+        val totalPrice = requestProduct.count * product.price
+        val discountPrice = applyCount * product.price
+        return PurchaseResult(requestProduct, applyCount, totalPrice, discountPrice)
     }
 
     private fun findProduct(name: String) = products.find { name == it.name }
