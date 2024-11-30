@@ -1,6 +1,10 @@
 package store
 
-class Store(initProducts: List<Product>, private val promotion: List<Promotion>) {
+import camp.nextstep.edu.missionutils.DateTimes
+import java.time.LocalDate
+import javax.swing.text.DateFormatter
+
+class Store(initProducts: List<Product>, private val promotions: List<Promotion>) {
 
     private var products = initProducts.toMutableList()
 
@@ -26,4 +30,13 @@ class Store(initProducts: List<Product>, private val promotion: List<Promotion>)
     private fun containsSameName(name: String) = products.count { it.name == name } == 1
 
     fun getProducts() = products.toList()
+
+    fun isPromotion(purchaseProduct: PurchaseProduct): Boolean {
+        val product = products.find { purchaseProduct.name == it.name } ?: return false
+        val promotion = promotions.find { product.promotion == it.name } ?: return false
+        val currentDate = DateTimes.now().toLocalDate()
+        val startDate = LocalDate.parse(promotion.startDate)
+        val endDate = LocalDate.parse(promotion.endDate)
+        return currentDate in startDate..endDate
+    }
 }
