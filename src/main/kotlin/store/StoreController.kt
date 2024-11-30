@@ -13,6 +13,10 @@ class StoreController {
         val store = Store(products, promotion)
         outputView.printProducts(store.getProducts())
         val purchaseProducts = inputView.inputPurchaseProduct(store.getProducts())
+        val purchaseResults = purchaseProducts.map { purchaseProduct ->
+            store.buyProducts(purchaseProduct)
+        }
+        outputView.printReceipt(purchaseResults)
     }
 
     private fun getProducts(): List<Product> {
