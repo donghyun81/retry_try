@@ -31,7 +31,7 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
 
     fun getProducts() = products.toList()
 
-    private fun isPromotion(purchaseProduct: PurchaseProduct): Boolean {
+    fun isPromotion(purchaseProduct: PurchaseProduct): Boolean {
         val product = findProduct(purchaseProduct.name) ?: return false
         val promotion = findPromotion(product) ?: return false
         val currentDate = DateTimes.now().toLocalDate()
@@ -41,15 +41,31 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
     }
 
     fun getPurchaseResult(purchaseProduct: PurchaseProduct): PurchaseResult {
-        val product = findProduct(purchaseProduct.name) ?: return PurchaseResult(purchaseProduct, 0)
-        val promotion = findPromotion(product) ?: return PurchaseResult(purchaseProduct, 0)
+        val product = findProduct(purchaseProduct.name) ?: throw IllegalArgumentException()
+        val promotion = findPromotion(product) ?: throw IllegalArgumentException()
         val applyCount = purchaseProduct.count / promotion.buy
-        return PurchaseResult(purchaseProduct, applyCount)
+        val buyCount = purchaseProduct.count - applyCount
+        buyPromotionProducts(purchaseProduct)
+        return PurchaseResult(
+            purchaseProduct,
+            applyCount,
+            purchaseProduct.count * product.price,
+            applyCount * product.price
+        )
     }
 
     fun isOutOfStock(purchaseProduct: PurchaseProduct): Boolean {
         val product = findProduct(purchaseProduct.name) ?: return false
-        return product.quantity < purchaseProduct.count
+        return product.getQuantity < purchaseProduct.count
+    }
+
+    private fun buyPromotionProducts(purchaseProduct: PurchaseProduct) {
+        var currentPurchaseProduct = purchaseProduct.count
+        products.filter { purchaseProduct.name == it.name }.forEach { product ->
+            product.buyQuantity(currentPurchaseProduct)
+            currentPurchaseProduct -= product.getQuantity
+            if (currentPurchaseProduct < 0) return
+        }
     }
 
     private fun findProduct(name: String) = products.find { name == it.name }
