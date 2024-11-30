@@ -39,6 +39,14 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
         return currentDate in startDate..endDate
     }
 
+    fun getAddApplyProduct(purchaseProduct: RequestProduct): RequestProduct {
+        val product = findProduct(purchaseProduct.name) ?: throw IllegalArgumentException()
+        val promotion = findPromotion(product) ?: throw IllegalArgumentException()
+        val excludeQuantity = purchaseProduct.count % (promotion.buy + promotion.get)
+        val applyCount = excludeQuantity.minus(promotion.buy).coerceAtLeast(0)
+        return RequestProduct(product.name, applyCount)
+    }
+
 
     fun getPurchaseResult(requestProduct: RequestProduct): PurchaseResult {
         val product = findProduct(requestProduct.name) ?: throw IllegalArgumentException()
