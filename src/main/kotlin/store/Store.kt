@@ -31,12 +31,28 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
 
     fun getProducts() = products.toList()
 
-    fun isPromotion(purchaseProduct: PurchaseProduct): Boolean {
-        val product = products.find { purchaseProduct.name == it.name } ?: return false
-        val promotion = promotions.find { product.promotion == it.name } ?: return false
+    private fun isPromotion(purchaseProduct: PurchaseProduct): Boolean {
+        val product = findProduct(purchaseProduct.name) ?: return false
+        val promotion = findPromotion(product) ?: return false
         val currentDate = DateTimes.now().toLocalDate()
         val startDate = LocalDate.parse(promotion.startDate)
         val endDate = LocalDate.parse(promotion.endDate)
         return currentDate in startDate..endDate
     }
+
+    fun getPurchaseResult(purchaseProduct: PurchaseProduct): PurchaseResult {
+        val product = findProduct(purchaseProduct.name) ?: return PurchaseResult(purchaseProduct, 0)
+        val promotion = findPromotion(product) ?: return PurchaseResult(purchaseProduct, 0)
+        val applyCount = purchaseProduct.count / promotion.buy
+        return PurchaseResult(purchaseProduct, applyCount)
+    }
+
+    fun isOutOfStock(purchaseProduct: PurchaseProduct): Boolean {
+        val product = findProduct(purchaseProduct.name) ?: return false
+        return product.quantity < purchaseProduct.count
+    }
+
+    private fun findProduct(name: String) = products.find { name == it.name }
+
+    private fun findPromotion(product: Product) = promotions.find { product.promotion == it.name }
 }
