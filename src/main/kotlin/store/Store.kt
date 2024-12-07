@@ -18,28 +18,30 @@ class Store(private val products: List<Product>, private val promotions: List<Pr
 
     fun getAddApplyProduct(purchaseProduct: RequestProduct): RequestProduct {
         val promotionStock =
-            products.find { product -> purchaseProduct.name == product.name } ?: return purchaseProduct.copy(count = 0)
+            products.find { product -> purchaseProduct.name == product.name }
+                ?: return purchaseProduct.copy(count = INIT_NUMBER)
         val promotion =
-            promotions.find { it.name == promotionStock.promotion } ?: return purchaseProduct.copy(count = 0)
+            promotions.find { it.name == promotionStock.promotion } ?: return purchaseProduct.copy(count = INIT_NUMBER)
         val totalEventCount = promotion.buy + promotion.get
         val remainPromotionCount = purchaseProduct.count % totalEventCount
         if (remainPromotionCount >= promotion.buy) {
             return purchaseProduct.copy(count = totalEventCount - remainPromotionCount)
         }
-        return purchaseProduct.copy(count = 0)
+        return purchaseProduct.copy(count = INIT_NUMBER)
     }
 
     fun getExcludeProduct(purchaseProduct: RequestProduct): RequestProduct {
         val promotionStock =
-            products.find { product -> purchaseProduct.name == product.name } ?: return purchaseProduct.copy(count = 0)
+            products.find { product -> purchaseProduct.name == product.name }
+                ?: return purchaseProduct.copy(count = INIT_NUMBER)
         val promotion =
-            promotions.find { it.name == promotionStock.promotion } ?: return purchaseProduct.copy(count = 0)
+            promotions.find { it.name == promotionStock.promotion } ?: return purchaseProduct.copy(count = INIT_NUMBER)
         val totalEventCount = promotion.buy + promotion.get
         val promotionCount =
             if (promotionStock.getQuantity() >= purchaseProduct.count) purchaseProduct.count.div(totalEventCount) * totalEventCount
             else promotionStock.getQuantity().div(totalEventCount) * totalEventCount
         if (purchaseProduct.count > promotionStock.getQuantity()) return purchaseProduct.copy(count = purchaseProduct.count - promotionCount)
-        return purchaseProduct.copy(count = 0)
+        return purchaseProduct.copy(count = INIT_NUMBER)
     }
 
     fun buyProduct(purchaseProduct: RequestProduct): PurchaseResult {
@@ -55,18 +57,22 @@ class Store(private val products: List<Product>, private val promotions: List<Pr
     }
 
     private fun getApplyCount(purchaseProduct: RequestProduct): Int {
+        if (isPromotionProduct(purchaseProduct).not()) return 0
         val promotionStock =
-            products.find { product -> purchaseProduct.name == product.name && product.promotion != null } ?: return 0
-        val promotion = promotions.find { it.name == promotionStock.promotion } ?: return 0
+            products.find { product -> purchaseProduct.name == product.name && product.promotion != null }
+                ?: return INIT_NUMBER
+        val promotion = promotions.find { it.name == promotionStock.promotion } ?: return INIT_NUMBER
         val totalEventCount = promotion.buy + promotion.get
         if (purchaseProduct.count >= promotionStock.getQuantity()) return (promotionStock.getQuantity() / totalEventCount) * promotion.get
         return (purchaseProduct.count / totalEventCount) * promotion.get
     }
 
     private fun getPromotionCount(purchaseProduct: RequestProduct): Int {
+        if (isPromotionProduct(purchaseProduct).not()) return 0
         val promotionStock =
-            products.find { product -> purchaseProduct.name == product.name && product.promotion != null } ?: return 0
-        val promotion = promotions.find { it.name == promotionStock.promotion } ?: return 0
+            products.find { product -> purchaseProduct.name == product.name && product.promotion != null }
+                ?: return INIT_NUMBER
+        val promotion = promotions.find { it.name == promotionStock.promotion } ?: return INIT_NUMBER
         val totalEventCount = promotion.buy + promotion.get
         if (purchaseProduct.count >= promotionStock.getQuantity()) return getApplyCount(purchaseProduct) * totalEventCount
         return getApplyCount(purchaseProduct) * totalEventCount

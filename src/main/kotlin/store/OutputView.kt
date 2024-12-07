@@ -4,11 +4,11 @@ import java.text.DecimalFormat
 
 class OutputView {
     fun printStart() {
-        println("안녕하세요. W편의점입니다.")
+        println(Guide.START.message)
     }
 
     fun printProducts(products: List<Product>) {
-        println("현재 보유하고 있는 상품입니다.\n")
+        println(Guide.STOCK.message)
         products.forEach { product ->
             println(
                 "- ${product.name} ${product.price.wonFormat()}원 ${
