@@ -12,7 +12,7 @@ class StoreController {
         val initPromotion = readPromotions()
         val store = Store(initProducts, initPromotion)
         outputView.printProducts(store.getProducts())
-        val purchaseProducts = inputView.readPurchaseProducts(store.getProducts())
+        val purchaseProducts = retryInput { inputView.readPurchaseProducts(store.getProducts()) }
         val buyProductResults = purchaseProducts.map { purchaseProduct ->
             if (store.isPromotionProduct(purchaseProduct)) store.buyProduct(
                 getPromotionPurchaseProduct(
@@ -22,7 +22,7 @@ class StoreController {
             )
             else store.buyProduct(purchaseProduct)
         }
-        val isMembership = inputView.readIsMembership()
+        val isMembership = retryInput { inputView.readIsMembership() }
         outputView.printReceipt(buyProductResults, isMembership)
     }
 
@@ -47,12 +47,12 @@ class StoreController {
     private fun getPromotionPurchaseProduct(purchaseProduct: RequestProduct, store: Store): RequestProduct {
         val applyProduct = store.getAddApplyProduct(purchaseProduct)
         if (applyProduct.count > 0) {
-            val isAddApply = inputView.readIsAddApplyProduct(applyProduct)
+            val isAddApply = retryInput { inputView.readIsAddApplyProduct(applyProduct) }
             return if (isAddApply) purchaseProduct.copy(count = purchaseProduct.count + applyProduct.count) else purchaseProduct
         }
         val excludeProduct = store.getExcludeProduct(purchaseProduct)
         if (excludeProduct.count > 0) {
-            val isExclude = inputView.readIsExcludeProduct(excludeProduct)
+            val isExclude = retryInput { inputView.readIsExcludeProduct(excludeProduct) }
             return if (isExclude) purchaseProduct.copy(count = purchaseProduct.count - excludeProduct.count) else purchaseProduct
         }
         return purchaseProduct
