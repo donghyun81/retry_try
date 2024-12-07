@@ -33,4 +33,11 @@ class InputView {
         require(isApplyProductInput == "Y" || isApplyProductInput == "N")
         return isApplyProductInput == "Y"
     }
+
+    fun readIsExcludeProduct(excludeProduct: RequestProduct): Boolean {
+        println("현재 ${excludeProduct.name} ${excludeProduct.count}개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)")
+        val isExcludeProduct = Console.readLine()
+        require(isExcludeProduct == "Y" || isExcludeProduct == "N")
+        return isExcludeProduct == "N"
+    }
 }
