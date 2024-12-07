@@ -21,7 +21,7 @@ class OutputView {
         println("===========W 편의점=============")
         println("상품명\t\t수량\t금액")
         results.forEach { result ->
-            println("${result.purchaseProduct.name}\t\t${result.purchaseProduct.count} \t${result.price * result.purchaseProduct.count}")
+            println("${result.purchaseProduct.name}\t\t${result.purchaseProduct.count} \t${(result.price * result.purchaseProduct.count).wonFormat()}")
         }
         println("===========증\t정=============")
         results.forEach { result ->
@@ -30,12 +30,12 @@ class OutputView {
             }
         }
         val totalPrice = results.sumOf { it.price * it.purchaseProduct.count }
-        val promotionDiscount = results.sumOf { it.price * it.applyCount }
+        val applyDiscount = results.sumOf { it.applyCount * it.price }
         val membershipDiscount = if (isMembership) membershipDiscount(results) else 0
-        val payment = totalPrice - promotionDiscount - membershipDiscount
+        val payment = totalPrice - applyDiscount - membershipDiscount
         println("==============================")
         println("총구매액		${results.sumOf { it.purchaseProduct.count }}	${totalPrice.wonFormat()}")
-        println("행사할인			${promotionDiscount.wonFormat()}")
+        println("행사할인			-${applyDiscount.wonFormat()}")
         println("멤버십할인			-${membershipDiscount.wonFormat()}")
         println("내실돈			 ${payment.wonFormat()}")
     }
