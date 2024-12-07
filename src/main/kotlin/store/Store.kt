@@ -17,25 +17,17 @@ class Store(private val products: List<Product>, private val promotions: List<Pr
     }
 
     fun getAddApplyProduct(purchaseProduct: RequestProduct): RequestProduct {
-        val promotionStock =
-            products.find { product -> purchaseProduct.name == product.name }
-                ?: return purchaseProduct.copy(count = INIT_NUMBER)
-        val promotion =
-            promotions.find { it.name == promotionStock.promotion } ?: return purchaseProduct.copy(count = INIT_NUMBER)
+        val promotionStock = findPromotionStock(purchaseProduct) ?: return purchaseProduct.copy(count = INIT_NUMBER)
+        val promotion = findPromotion(promotionStock) ?: return purchaseProduct.copy(count = INIT_NUMBER)
         val totalEventCount = promotion.buy + promotion.get
         val remainPromotionCount = purchaseProduct.count % totalEventCount
-        if (remainPromotionCount >= promotion.buy) {
-            return purchaseProduct.copy(count = totalEventCount - remainPromotionCount)
-        }
+        if (remainPromotionCount >= promotion.buy) return purchaseProduct.copy(count = totalEventCount - remainPromotionCount)
         return purchaseProduct.copy(count = INIT_NUMBER)
     }
 
     fun getExcludeProduct(purchaseProduct: RequestProduct): RequestProduct {
-        val promotionStock =
-            products.find { product -> purchaseProduct.name == product.name }
-                ?: return purchaseProduct.copy(count = INIT_NUMBER)
-        val promotion =
-            promotions.find { it.name == promotionStock.promotion } ?: return purchaseProduct.copy(count = INIT_NUMBER)
+        val promotionStock = findPromotionStock(purchaseProduct) ?: return purchaseProduct.copy(count = INIT_NUMBER)
+        val promotion = findPromotion(promotionStock) ?: return purchaseProduct.copy(count = INIT_NUMBER)
         val totalEventCount = promotion.buy + promotion.get
         val promotionCount =
             if (promotionStock.getQuantity() >= purchaseProduct.count) purchaseProduct.count.div(totalEventCount) * totalEventCount
@@ -69,12 +61,16 @@ class Store(private val products: List<Product>, private val promotions: List<Pr
 
     private fun getPromotionCount(purchaseProduct: RequestProduct): Int {
         if (isPromotionProduct(purchaseProduct).not()) return 0
-        val promotionStock =
-            products.find { product -> purchaseProduct.name == product.name && product.promotion != null }
-                ?: return INIT_NUMBER
-        val promotion = promotions.find { it.name == promotionStock.promotion } ?: return INIT_NUMBER
+        val promotionStock = findPromotionStock(purchaseProduct) ?: return INIT_NUMBER
+        val promotion = findPromotion(promotionStock) ?: return INIT_NUMBER
         val totalEventCount = promotion.buy + promotion.get
         if (purchaseProduct.count >= promotionStock.getQuantity()) return getApplyCount(purchaseProduct) * totalEventCount
         return getApplyCount(purchaseProduct) * totalEventCount
     }
+
+    private fun findPromotionStock(purchaseProduct: RequestProduct) =
+        products.find { product -> purchaseProduct.name == product.name && product.promotion != null }
+
+
+    private fun findPromotion(promotionStock: Product) = promotions.find { it.name == promotionStock.promotion }
 }
