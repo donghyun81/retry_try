@@ -7,9 +7,11 @@ class StoreController {
 
     fun run() {
         outputView.printStart()
+        val products = readProducts()
+        outputView.printProducts(products)
     }
 
-    fun readProducts(): List<Product> {
+    private fun readProducts(): List<Product> {
         val products = FileReader("src/main/resources/products.md").readLines().drop(1).map { productLine ->
             val (name, price, quantity, promotion) = productLine.split(",")
             Product(name, price.toInt(), quantity.toInt(), promotion.validateNull())

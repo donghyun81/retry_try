@@ -6,10 +6,10 @@ class OutputView {
     fun printStart() {
         println("안녕하세요. W편의점입니다.")
     }
-    
+
     fun printProducts(products: List<Product>) {
         products.forEach { product ->
-            println("- ${product.name} ${product.price.countOrEmpty()} ${product.quantity.wonFormat()}원 ${product.promotion ?: ""}")
+            println("- ${product.name} ${product.price.wonFormat()}원 ${product.quantity.countOrEmpty()} ${product.promotion ?: ""}")
         }
     }
 
