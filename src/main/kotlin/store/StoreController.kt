@@ -4,6 +4,7 @@ import java.io.FileReader
 
 class StoreController {
     private val outputView = OutputView()
+    private val inputView = InputView()
 
     fun run() {
         outputView.printStart()
@@ -11,6 +12,12 @@ class StoreController {
         val initPromotion = readPromotions()
         val store = Store(initProducts, initPromotion)
         outputView.printProducts(store.getProducts())
+        val purchaseProducts = inputView.readPurchaseProducts(store.getProducts())
+        val buyProductResults = purchaseProducts.map { purchaseProduct ->
+            if (store.isPromotionProduct(purchaseProduct)) {
+                val applyProduct = store.getApplyProduct(purchaseProduct)
+            }
+        }
     }
 
     private fun readProducts(): List<Product> {
