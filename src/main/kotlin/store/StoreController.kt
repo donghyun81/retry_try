@@ -23,6 +23,7 @@ class StoreController {
             else store.buyProduct(purchaseProduct)
         }
         val isMembership = inputView.readIsMembership()
+        outputView.printReceipt(buyProductResults, isMembership)
     }
 
     private fun readProducts(): List<Product> {

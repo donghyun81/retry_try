@@ -34,10 +34,10 @@ class OutputView {
         val membershipDiscount = if (isMembership) membershipDiscount(results) else 0
         val payment = totalPrice - promotionDiscount - membershipDiscount
         println("==============================")
-        println("총구매액		${results.sumOf { it.purchaseProduct.count }}	${results.sumOf { it.price * it.purchaseProduct.count }}")
-        println("행사할인			${results.sumOf { it.price * it.applyCount }}")
-        println("멤버십할인			-${membershipDiscount}")
-        println("내실돈			 $payment")
+        println("총구매액		${results.sumOf { it.purchaseProduct.count }}	${totalPrice.wonFormat()}")
+        println("행사할인			${promotionDiscount.wonFormat()}")
+        println("멤버십할인			-${membershipDiscount.wonFormat()}")
+        println("내실돈			 ${payment.wonFormat()}")
     }
 
     private fun membershipDiscount(results: List<PurchaseResult>): Int {
