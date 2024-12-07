@@ -8,6 +8,7 @@ class StoreController {
     fun run() {
         outputView.printStart()
         val products = readProducts()
+        val promotion = readPromotions()
         outputView.printProducts(products)
     }
 
@@ -20,6 +21,13 @@ class StoreController {
             products.filter { product -> product.promotion != null && products.count { it.name == product.name } == 1 }
         onlyPromotionProduct.forEach { product -> products.add(product.copy(quantity = 0)) }
         return products.groupBy { it.name }.flatMap { (_, value) -> value.sortedByDescending { it.promotion } }
+    }
+
+    private fun readPromotions(): List<Promotion> {
+        return FileReader("src/main/resources/promotions.md").readLines().drop(1).map { promotionLine ->
+            val (name, buyInput, getInput, startDate, endDate) = promotionLine.split(",")
+            Promotion(name, buyInput.toInt(), getInput.toInt(), startDate, endDate)
+        }
     }
 
     private fun String.validateNull(): String? {
