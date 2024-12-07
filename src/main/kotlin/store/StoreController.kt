@@ -11,19 +11,23 @@ class StoreController {
         val initProducts = readProducts()
         val initPromotion = readPromotions()
         val store = Store(initProducts, initPromotion)
-        outputView.printProducts(store.getProducts())
-        val purchaseProducts = retryInput { inputView.readPurchaseProducts(store.getProducts()) }
-        val buyProductResults = purchaseProducts.map { purchaseProduct ->
-            if (store.isPromotionProduct(purchaseProduct)) store.buyProduct(
-                getPromotionPurchaseProduct(
-                    purchaseProduct,
-                    store
+        while (true) {
+            outputView.printProducts(store.getProducts())
+            val purchaseProducts = retryInput { inputView.readPurchaseProducts(store.getProducts()) }
+            val buyProductResults = purchaseProducts.map { purchaseProduct ->
+                if (store.isPromotionProduct(purchaseProduct)) store.buyProduct(
+                    getPromotionPurchaseProduct(
+                        purchaseProduct,
+                        store
+                    )
                 )
-            )
-            else store.buyProduct(purchaseProduct)
+                else store.buyProduct(purchaseProduct)
+            }
+            val isMembership = retryInput { inputView.readIsMembership() }
+            outputView.printReceipt(buyProductResults, isMembership)
+            val isRetryPurchase = inputView.readIsRetryPurchase()
+            if (isRetryPurchase.not()) break
         }
-        val isMembership = retryInput { inputView.readIsMembership() }
-        outputView.printReceipt(buyProductResults, isMembership)
     }
 
     private fun readProducts(): List<Product> {
