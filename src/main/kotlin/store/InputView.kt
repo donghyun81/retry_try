@@ -47,4 +47,11 @@ class InputView {
         require(isMemberShip == "Y" || isMemberShip == "N")
         return isMemberShip == "Y"
     }
+
+    fun readIsRetryPurchase(): Boolean {
+        println("감사합니다. 구매하고 싶은 다른 상품이 있나요? (Y/N)")
+        val isRetryPurchase = Console.readLine()
+        require(isRetryPurchase == "Y" || isRetryPurchase == "N")
+        return isRetryPurchase == "Y"
+    }
 }
