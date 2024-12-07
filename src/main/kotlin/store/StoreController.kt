@@ -16,6 +16,7 @@ class StoreController {
             val purchaseProducts = retryInput { inputView.inputPurchaseProduct(store.getProducts()) }
             val purchaseResults = purchaseProducts.map { purchaseProduct ->
                 val processedPurchaseProduct = getPromotionPurchaseProduct(purchaseProduct, store)
+                // 제외
                 store.buyProducts(processedPurchaseProduct)
             }
             val isMemberShip = retryInput { inputView.inputIsMemberShip() }

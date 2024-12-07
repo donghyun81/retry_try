@@ -29,7 +29,7 @@ class InputView {
     }
 
     fun inputIsExcludeProduct(requestProduct: RequestProduct): Boolean {
-        println("현재 콜라 4개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)")
+        println("현재 ${requestProduct.name} ${requestProduct.count}개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)")
         val isIsExcludeProduct = Console.readLine()
         require(isIsExcludeProduct == "Y" || isIsExcludeProduct == "N") { "[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요." }
         return isIsExcludeProduct == "N"
