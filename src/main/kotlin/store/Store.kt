@@ -16,7 +16,7 @@ class Store(private val products: List<Product>, private val promotions: List<Pr
         return currentDate in startDate..endDate
     }
 
-    fun getApplyProduct(purchaseProduct: RequestProduct): RequestProduct {
+    fun getAddApplyProduct(purchaseProduct: RequestProduct): RequestProduct {
         val promotionStock =
             products.find { product -> purchaseProduct.name == product.name } ?: return purchaseProduct.copy(count = 0)
         val promotion = promotions.find { it.name == promotionStock.name } ?: return purchaseProduct.copy(count = 0)
@@ -34,7 +34,26 @@ class Store(private val products: List<Product>, private val promotions: List<Pr
         val promotion = promotions.find { it.name == promotionStock.name } ?: return purchaseProduct.copy(count = 0)
         val totalEventCount = promotion.buy + promotion.get
         val promotionCount = purchaseProduct.count.div(totalEventCount) * totalEventCount
-        if (purchaseProduct.count > promotionStock.quantity) return purchaseProduct.copy(count = purchaseProduct.count - promotionCount)
+        if (purchaseProduct.count > promotionStock.getQuantity()) return purchaseProduct.copy(count = purchaseProduct.count - promotionCount)
         return purchaseProduct.copy(count = 0)
+    }
+
+    fun buyProduct(purchaseProduct: RequestProduct): PurchaseResult {
+        val stocks = products.filter { it.name == purchaseProduct.name }
+        var currentBuyCount = purchaseProduct.count
+        stocks.forEach { product ->
+            val buyCount = product.buyProduct(currentBuyCount)
+            currentBuyCount -= buyCount
+        }
+        val applyCount = getApplyCount(purchaseProduct)
+        return PurchaseResult(purchaseProduct, applyCount, stocks.first().price)
+    }
+
+    private fun getApplyCount(purchaseProduct: RequestProduct): Int {
+        val promotionStock =
+            products.find { product -> purchaseProduct.name == product.name && product.promotion != null } ?: return 0
+        val promotion = promotions.find { it.name == promotionStock.name } ?: return 0
+        val totalEventCount = promotion.buy + promotion.get
+        return purchaseProduct.count / totalEventCount * promotion.get
     }
 }

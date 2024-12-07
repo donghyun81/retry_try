@@ -9,7 +9,7 @@ class OutputView {
 
     fun printProducts(products: List<Product>) {
         products.forEach { product ->
-            println("- ${product.name} ${product.price.wonFormat()}원 ${product.quantity.countOrEmpty()} ${product.promotion ?: ""}")
+            println("- ${product.name} ${product.price.wonFormat()}원 ${product.getQuantity().countOrEmpty()} ${product.promotion ?: ""}")
         }
     }
 
