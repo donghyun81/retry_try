@@ -26,4 +26,11 @@ class InputView {
         }
         return purchaseProducts
     }
+
+    fun readIsAddApplyProduct(applyProduct: RequestProduct): Boolean {
+        println("현재 ${applyProduct.name}은(는) ${applyProduct.count}개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)")
+        val isApplyProductInput = Console.readLine()
+        require(isApplyProductInput == "Y" || isApplyProductInput == "N")
+        return isApplyProductInput == "Y"
+    }
 }
