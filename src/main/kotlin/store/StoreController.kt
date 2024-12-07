@@ -14,7 +14,7 @@ class StoreController {
             val buyProductResults = getBuyProductsResult(purchaseProducts, store)
             val isMembership = retryInput { inputView.readIsMembership() }
             outputView.printReceipt(buyProductResults, isMembership)
-            if (inputView.readIsRetryPurchase().not()) break
+            if (retryInput { inputView.readIsRetryPurchase().not() }) break
         }
     }
 

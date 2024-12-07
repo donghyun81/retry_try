@@ -21,6 +21,8 @@ class Store(private val products: List<Product>, private val promotions: List<Pr
         val promotion = findPromotion(promotionStock) ?: return purchaseProduct.copy(count = INIT_NUMBER)
         val totalEventCount = promotion.buy + promotion.get
         val remainPromotionCount = purchaseProduct.count % totalEventCount
+        val addApplyCount = totalEventCount - remainPromotionCount
+        if (purchaseProduct.count + addApplyCount > promotionStock.getQuantity()) return purchaseProduct.copy(count = INIT_NUMBER)
         if (remainPromotionCount >= promotion.buy) return purchaseProduct.copy(count = totalEventCount - remainPromotionCount)
         return purchaseProduct.copy(count = INIT_NUMBER)
     }
@@ -32,7 +34,7 @@ class Store(private val products: List<Product>, private val promotions: List<Pr
         val promotionCount =
             if (promotionStock.getQuantity() >= purchaseProduct.count) purchaseProduct.count.div(totalEventCount) * totalEventCount
             else promotionStock.getQuantity().div(totalEventCount) * totalEventCount
-        if (purchaseProduct.count > promotionStock.getQuantity()) return purchaseProduct.copy(count = purchaseProduct.count - promotionCount)
+        if (purchaseProduct.count >= promotionStock.getQuantity()) return purchaseProduct.copy(count = purchaseProduct.count - promotionCount)
         return purchaseProduct.copy(count = INIT_NUMBER)
     }
 
