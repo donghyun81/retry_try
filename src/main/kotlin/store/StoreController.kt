@@ -16,6 +16,9 @@ class StoreController {
         val buyProductResults = purchaseProducts.map { purchaseProduct ->
             if (store.isPromotionProduct(purchaseProduct)) {
                 val applyProduct = store.getApplyProduct(purchaseProduct)
+                if (applyProduct.count > 0) {
+                    inputView.readIsAddApplyProduct(applyProduct)
+                }
             }
         }
     }
