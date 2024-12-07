@@ -22,7 +22,7 @@ class InputView {
         purchaseProducts.forEach { purchaseProduct ->
             val stock = products.filter { purchaseProduct.name == it.name }
             require(stock.isEmpty()) { "[ERROR] 존재하지 않는 상품입니다. 다시 입력해 주세요." }
-            require(purchaseProduct.count <= stock.sumOf { it.quantity }) { "[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요." }
+            require(purchaseProduct.count <= stock.sumOf { it.getQuantity() }) { "[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요." }
         }
         return purchaseProducts
     }
@@ -39,5 +39,12 @@ class InputView {
         val isExcludeProduct = Console.readLine()
         require(isExcludeProduct == "Y" || isExcludeProduct == "N")
         return isExcludeProduct == "N"
+    }
+
+    fun readIsMembership(): Boolean {
+        println("멤버십 할인을 받으시겠습니까? (Y/N)")
+        val isMemberShip = Console.readLine()
+        require(isMemberShip == "Y" || isMemberShip == "N")
+        return isMemberShip == "Y"
     }
 }
