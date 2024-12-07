@@ -7,9 +7,10 @@ class StoreController {
 
     fun run() {
         outputView.printStart()
-        val products = readProducts()
-        val promotion = readPromotions()
-        outputView.printProducts(products)
+        val initProducts = readProducts()
+        val initPromotion = readPromotions()
+        val store = Store(initProducts, initPromotion)
+        outputView.printProducts(store.getProducts())
     }
 
     private fun readProducts(): List<Product> {
