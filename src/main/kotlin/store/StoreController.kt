@@ -14,16 +14,8 @@ class StoreController {
         outputView.printProducts(store.getProducts())
         val purchaseProducts = inputView.readPurchaseProducts(store.getProducts())
         val buyProductResults = purchaseProducts.map { purchaseProduct ->
-            if (store.isPromotionProduct(purchaseProduct)) {
-                val applyProduct = store.getAddApplyProduct(purchaseProduct)
-                if (applyProduct.count > 0) {
-                    val isAddApply = inputView.readIsAddApplyProduct(applyProduct)
-                }
-                val excludeProduct = store.getExcludeProduct(purchaseProduct)
-                if (excludeProduct.count > 0) {
-                    val isExclude = inputView.readIsExcludeProduct(excludeProduct)
-                }
-            }
+            if (store.isPromotionProduct(purchaseProduct)) store.buyProduct(getPromotionPurchaseProduct(purchaseProduct, store))
+            else store.buyProduct(purchaseProduct)
         }
     }
 
@@ -43,6 +35,20 @@ class StoreController {
             val (name, buyInput, getInput, startDate, endDate) = promotionLine.split(",")
             Promotion(name, buyInput.toInt(), getInput.toInt(), startDate, endDate)
         }
+    }
+
+    private fun getPromotionPurchaseProduct(purchaseProduct: RequestProduct, store: Store): RequestProduct {
+        val applyProduct = store.getAddApplyProduct(purchaseProduct)
+        if (applyProduct.count > 0) {
+            val isAddApply = inputView.readIsAddApplyProduct(applyProduct)
+            return if (isAddApply) purchaseProduct.copy(count = purchaseProduct.count + applyProduct.count) else purchaseProduct
+        }
+        val excludeProduct = store.getExcludeProduct(purchaseProduct)
+        if (excludeProduct.count > 0) {
+            val isExclude = inputView.readIsExcludeProduct(excludeProduct)
+            return if (isExclude) purchaseProduct.copy(count = purchaseProduct.count - excludeProduct.count) else purchaseProduct
+        }
+        return purchaseProduct
     }
 
     private fun String.validateNull(): String? {
