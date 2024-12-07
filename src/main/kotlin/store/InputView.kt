@@ -6,6 +6,7 @@ class InputView {
     fun readPurchaseProducts(products: List<Product>): List<RequestProduct> {
         println("구매하실 상품명과 수량을 입력해 주세요. (예: [사이다-2],[감자칩-1])")
         val purchaseProductInput = Console.readLine().split(",")
+        println()
         val confirmedPurchaseProductInput = purchaseProductInput.map { input ->
             require(input.first() == '[' && input.last() == ']') { "[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요." }
             input.removeSurrounding("[", "]")
@@ -30,6 +31,7 @@ class InputView {
     fun readIsAddApplyProduct(applyProduct: RequestProduct): Boolean {
         println("현재 ${applyProduct.name}은(는) ${applyProduct.count}개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)")
         val isApplyProductInput = Console.readLine()
+        println()
         require(isApplyProductInput == "Y" || isApplyProductInput == "N")
         return isApplyProductInput == "Y"
     }
@@ -37,6 +39,7 @@ class InputView {
     fun readIsExcludeProduct(excludeProduct: RequestProduct): Boolean {
         println("현재 ${excludeProduct.name} ${excludeProduct.count}개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)")
         val isExcludeProduct = Console.readLine()
+        println()
         require(isExcludeProduct == "Y" || isExcludeProduct == "N")
         return isExcludeProduct == "N"
     }
