@@ -3,7 +3,7 @@ package store
 import camp.nextstep.edu.missionutils.Console
 
 class InputView {
-    fun readPurchaseProducts(products: List<Product>): List<PurchaseProduct> {
+    fun readPurchaseProducts(products: List<Product>): List<RequestProduct> {
         println("구매하실 상품명과 수량을 입력해 주세요. (예: [사이다-2],[감자칩-1])")
         val purchaseProductInput = Console.readLine().split(",")
         val confirmedPurchaseProductInput = purchaseProductInput.map { input ->
@@ -14,10 +14,10 @@ class InputView {
             require(input.split("-").size == 2) { "[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요." }
             val (name, countInput) = input.split("-")
             val count = requireNotNull(countInput.toIntOrNull()) { "[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요." }
-            PurchaseProduct(name, count)
+            RequestProduct(name, count)
         }.groupBy { it.name }.map { (name, product) ->
             val totalCount = product.sumOf { it.count }
-            PurchaseProduct(name, totalCount)
+            RequestProduct(name, totalCount)
         }
         purchaseProducts.forEach { purchaseProduct ->
             val stock = products.filter { purchaseProduct.name == it.name }
