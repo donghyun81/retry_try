@@ -17,7 +17,11 @@ class StoreController {
             if (store.isPromotionProduct(purchaseProduct)) {
                 val applyProduct = store.getApplyProduct(purchaseProduct)
                 if (applyProduct.count > 0) {
-                    inputView.readIsAddApplyProduct(applyProduct)
+                    val isAddApply = inputView.readIsAddApplyProduct(applyProduct)
+                }
+                val excludeProduct = store.getExcludeProduct(purchaseProduct)
+                if (excludeProduct.count > 0) {
+                    val isExclude = inputView.readIsExcludeProduct(excludeProduct)
                 }
             }
         }
