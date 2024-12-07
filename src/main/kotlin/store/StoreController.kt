@@ -31,7 +31,7 @@ class StoreController {
     }
 
     private fun readProducts(): List<Product> {
-        val products = FileReader("src/main/resources/products.md").readLines().drop(1).map { productLine ->
+        val products = FileReader(File.PRODUCTS.path).readLines().drop(1).map { productLine ->
             val (name, price, quantity, promotion) = productLine.split(",")
             Product(name, price.toInt(), quantity.toInt(), promotion.validateNull())
         }.toMutableList()
@@ -42,7 +42,7 @@ class StoreController {
     }
 
     private fun readPromotions(): List<Promotion> {
-        return FileReader("src/main/resources/promotions.md").readLines().drop(1).map { promotionLine ->
+        return FileReader(File.PROMOTIONS.path).readLines().drop(1).map { promotionLine ->
             val (name, buyInput, getInput, startDate, endDate) = promotionLine.split(",")
             Promotion(name, buyInput.toInt(), getInput.toInt(), startDate, endDate)
         }
