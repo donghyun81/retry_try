@@ -14,9 +14,15 @@ class StoreController {
         outputView.printProducts(store.getProducts())
         val purchaseProducts = inputView.readPurchaseProducts(store.getProducts())
         val buyProductResults = purchaseProducts.map { purchaseProduct ->
-            if (store.isPromotionProduct(purchaseProduct)) store.buyProduct(getPromotionPurchaseProduct(purchaseProduct, store))
+            if (store.isPromotionProduct(purchaseProduct)) store.buyProduct(
+                getPromotionPurchaseProduct(
+                    purchaseProduct,
+                    store
+                )
+            )
             else store.buyProduct(purchaseProduct)
         }
+        val isMembership = inputView.readIsMembership()
     }
 
     private fun readProducts(): List<Product> {
