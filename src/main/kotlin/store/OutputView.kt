@@ -9,8 +9,41 @@ class OutputView {
 
     fun printProducts(products: List<Product>) {
         products.forEach { product ->
-            println("- ${product.name} ${product.price.wonFormat()}원 ${product.getQuantity().countOrEmpty()} ${product.promotion ?: ""}")
+            println(
+                "- ${product.name} ${product.price.wonFormat()}원 ${
+                    product.getQuantity().countOrEmpty()
+                } ${product.promotion ?: ""}"
+            )
         }
+    }
+
+    fun printReceipt(results: List<PurchaseResult>, isMembership: Boolean) {
+        println("===========W 편의점=============")
+        println("상품명\t\t수량\t금액")
+        results.forEach { result ->
+            println("${result.purchaseProduct.name}\t\t${result.purchaseProduct.count} \t${result.price * result.purchaseProduct.count}")
+        }
+        println("===========증\t정=============")
+        results.forEach { result ->
+            if (result.applyCount > 0) {
+                println("${result.purchaseProduct.name}\t\t${result.applyCount}")
+            }
+        }
+        val totalPrice = results.sumOf { it.price * it.purchaseProduct.count }
+        val promotionDiscount = results.sumOf { it.price * it.applyCount }
+        val membershipDiscount = if (isMembership) membershipDiscount(results) else 0
+        val payment = totalPrice - promotionDiscount - membershipDiscount
+        println("==============================")
+        println("총구매액		${results.sumOf { it.purchaseProduct.count }}	${results.sumOf { it.price * it.purchaseProduct.count }}")
+        println("행사할인			${results.sumOf { it.price * it.applyCount }}")
+        println("멤버십할인			-${membershipDiscount}")
+        println("내실돈			 $payment")
+    }
+
+    private fun membershipDiscount(results: List<PurchaseResult>): Int {
+        val totalPrice = results.sumOf { it.price * it.purchaseProduct.count }
+        val promotionPrice = results.sumOf { it.price * it.promotionCount }
+        return ((totalPrice - promotionPrice) * 0.3).toInt().coerceAtMost(8000)
     }
 
     private fun Int.wonFormat(): String {
