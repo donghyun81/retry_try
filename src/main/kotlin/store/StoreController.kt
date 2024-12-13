@@ -8,6 +8,7 @@ class StoreController {
         outputView.printStart()
         val products = fileService.readProducts()
         val promotion = fileService.readPromotions()
-        outputView.printStocks(products)
+        val storeService = StoreService(products, promotion)
+        outputView.printStocks(storeService.getProducts())
     }
 }
