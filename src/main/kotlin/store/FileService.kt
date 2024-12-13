@@ -15,6 +15,13 @@ class FileService {
         return products.groupBy { it.name }.flatMap { (_, product) -> product.sortedByDescending { it.promotion } }
     }
 
+    fun readPromotions(): List<Promotion> {
+        return FileReader("src/main/resources/promotions.md").readLines().drop(1).map { productFile ->
+            val (name, buy, get, startDate, endDate) = productFile.split(",")
+            Promotion(name, buy.toInt(), get.toInt(), startDate, endDate)
+        }
+    }
+
     private fun String.nullOrPromotion(): String? {
         if (this == "null") return null
         return this
