@@ -36,6 +36,7 @@ class Store(initProducts: List<Product>, private val promotions: List<Promotion>
         val promotionCount =
             if (promotionStock.quantity >= purchaseProduct.count) purchaseProduct.count.div(totalEventCount) * totalEventCount
             else promotionStock.quantity.div(totalEventCount) * totalEventCount
+
         if (purchaseProduct.count >= promotionStock.quantity) return purchaseProduct.copy(count = purchaseProduct.count - promotionCount)
         return purchaseProduct.copy(count = INIT_NUMBER)
     }
