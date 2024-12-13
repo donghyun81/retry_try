@@ -13,7 +13,7 @@ class OutputView {
             println("- ${product.name} ${product.price.wonFormat()}원 ${product.quantity.emptyStock()} ${product.promotion ?: ""}")
         }
     }
-    
+
     fun printReceipt(purchaseResults: List<PurchaseResult>, memberShipDiscount: Int) {
         println("===========W 편의점=============")
         println("상품명\t\t수량\t금액")
@@ -29,10 +29,10 @@ class OutputView {
         val totalPrice = purchaseResults.sumOf { it.totalPrice }
         val eventDiscount = purchaseResults.sumOf { it.applyDiscount }
         println("==============================")
-        println("총구매액\t\t${purchaseResults.sumOf { it.purchaseProduct.count }}\t${purchaseResults.sumOf { it.totalPrice }}")
-        println("행사할인\t\t\t-${eventDiscount}")
-        println("멤버십할인\t\t\t-${memberShipDiscount}")
-        println("내실돈\t\t\t ${totalPrice - eventDiscount - memberShipDiscount}")
+        println("총구매액\t\t${purchaseResults.sumOf { it.purchaseProduct.count }}\t${purchaseResults.sumOf { it.totalPrice }.wonFormat()}")
+        println("행사할인\t\t\t-${eventDiscount.wonFormat()}")
+        println("멤버십할인\t\t\t-${memberShipDiscount.wonFormat()}")
+        println("내실돈\t\t\t ${(totalPrice - eventDiscount - memberShipDiscount).wonFormat()}")
     }
 
     private fun Int.wonFormat(): String {
