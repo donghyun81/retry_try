@@ -64,10 +64,10 @@ class StoreController {
 
     private fun getBuyProductsResult(purchaseProducts: List<RequestProduct>, store: Store): List<PurchaseResult> {
         return purchaseProducts.map { purchaseProduct ->
-            if (store.isPromotionProduct(purchaseProduct)) store.buyProduct(
+            if (store.isPromotionProduct(purchaseProduct)) store.getPurchaseResult(
                 getPromotionPurchaseProduct(purchaseProduct, store)
             )
-            else store.buyProduct(purchaseProduct)
+            else store.getPurchaseResult(purchaseProduct)
         }
     }
 

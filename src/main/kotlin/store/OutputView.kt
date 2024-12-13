@@ -12,7 +12,7 @@ class OutputView {
         products.forEach { product ->
             println(
                 "- ${product.name} ${product.price.wonFormat()}원 ${
-                    product.getQuantity().countOrEmpty()
+                    product.quantity.countOrEmpty()
                 } ${product.promotion ?: ""}"
             )
         }

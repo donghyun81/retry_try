@@ -36,7 +36,7 @@ class InputView {
         purchaseProducts.forEach { purchaseProduct ->
             val stock = products.filter { purchaseProduct.name == it.name }
             require(stock.isEmpty().not()) { Error.EMPTY_PRODUCT.getMessage() }
-            require(purchaseProduct.count <= stock.sumOf { it.getQuantity() }) { Error.OVER_QUANTITY.getMessage() }
+            require(purchaseProduct.count <= stock.sumOf { it.quantity }) { Error.OVER_QUANTITY.getMessage() }
         }
     }
 
